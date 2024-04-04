@@ -33,7 +33,7 @@ def about(request):
 
 def finches_index(request):
     # tell the model to find all the rows in the finches table!
-    finches = Finch.objects.all()
+    # finches = Finch.objects.all()
     return render(request, 'finches/index.html', {
         'finches': finches
     })
