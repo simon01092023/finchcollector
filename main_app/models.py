@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 
@@ -10,3 +11,9 @@ class Finch(models.Model):
 
     def __str__(self):
         return self.species
+
+    def get_absolute_url(self):
+        # redirect to detail url path
+        return reverse('finch-detail', kwargs={'finch_id': self.id})
+        # int:finch_id & POST newly created finch
+        # return reverse('', kwargs={'pk': self.pk})

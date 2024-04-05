@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- object exists a finch, with same keys as your model -->
+{% if object %}
+	<h1>Edit <span class="black-text">{{ object.species }}</span></h1>
+{% else %}	
+<div style="display: flex; align-items: center; gap: 10px;"> 
+    <h1 style="margin: 0;">Add Finch</h1> 
+    <img src="{% static '/img/new.jpg' %}" style="max-width: 200px; margin: 0;">
+  </div>
+{% endif %}
+
+<!-- empty action means form post to the same url used to display it -->
+<form action="" method="POST">
+	{% csrf_token %}
+
+	<table>
+		<!-- the form variable comes from class based view CreateFinch created from the model Finch -->
+		{{ form.as_table }}
+	</table>
+	<input type="submit" value="Submit!" class="btn">
+</form>
+{% endblock content %}
