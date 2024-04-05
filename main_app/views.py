@@ -1,12 +1,13 @@
 from django.shortcuts import render
+from .models import Finch
 
 # Create your views here.
 finches = [
-    {'id': 1, 'species': 'Zebra Finch', 'color': 'Gray', 'size': 'Small'},
-    {'id': 2, 'species': 'Gouldian Finch', 'color': 'Multicolored', 'size': 'Small'},
-    {'id': 3, 'species': 'Society Finch', 'color': 'Brown', 'size': 'Small'},
-    {'id': 4, 'species': 'Spice Finch', 'color': 'Brown', 'size': 'Small'},
-    {'id': 5, 'species': 'Star Finch', 'color': 'Red', 'size': 'Small'}
+    {'species': 'Zebra Finch', 'color': 'Gray', 'size': 'Small'},
+    {'species': 'Gouldian Finch', 'color': 'Multicolored', 'size': 'Small'},
+    {'species': 'Society Finch', 'color': 'Brown', 'size': 'Small'},
+    {'species': 'Spice Finch', 'color': 'Brown', 'size': 'Small'},
+    {'species': 'Star Finch', 'color': 'Red', 'size': 'Small'}
 ]
 
 # Define a function to simulate a view that returns finch data
@@ -33,7 +34,12 @@ def about(request):
 
 def finches_index(request):
     # tell the model to find all the rows in the finches table!
-    # finches = Finch.objects.all()
+    finches = Finch.objects.all()
     return render(request, 'finches/index.html', {
         'finches': finches
     })
+
+def finch_detail(request, finch_id):
+    finch = Finch.objects.get(id=finch_id)
+    return render(request, 'finches/detail.html', { 'finch': finch })
+
