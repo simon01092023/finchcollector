@@ -1,8 +1,6 @@
 from django.db import models
 from django.urls import reverse
 
-# Create your models here.
-
 
 class Finch(models.Model):
     species = models.CharField(max_length=100)
@@ -13,7 +11,34 @@ class Finch(models.Model):
         return self.species
 
     def get_absolute_url(self):
-        # redirect to detail url path
+        # Redirect to detail URL path
         return reverse('finch-detail', kwargs={'finch_id': self.id})
-        # int:finch_id & POST newly created finch
-        # return reverse('', kwargs={'pk': self.pk})
+
+    def update_hunger_status(self):
+        # Check if any feedings exist for this finch
+        if self.feeding_set.exists():
+            self.is_hungry = False
+        else:
+            self.is_hungry = True
+
+        # Save the updated status
+        self.save()
+
+    # Initialize is_hungry attribute
+    is_hungry = models.BooleanField(default=True)
+
+
+MEALS = (("B", "Breakfast"), ("L", "Lunch"), ("D", "Dinner"))
+
+
+class Feeding(models.Model):
+    date = models.DateField("feeding date")
+    meal = models.CharField(
+        max_length=1,
+        choices=MEALS,
+        default=MEALS[0][0],
+    )
+    finch = models.ForeignKey(Finch, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.get_meal_display()} on {self.date}"

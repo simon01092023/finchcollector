@@ -3,7 +3,7 @@
 {% block content %}
   <h1>Delete Finch</h1>
 
-  <h4>Are you sure you want to release <span class="black-text">{{ object.species }}</span> back into the wild 🕊️?</h4>
+  <h4>Are you sure you want to release <span class="black darken-2">{{ object.species }}</span> back into the wild 🕊️?</h4>
 
   <form action="" method="POST">
     {% csrf_token %}

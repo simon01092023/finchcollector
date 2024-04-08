@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, HttpResponse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Finch
+from .forms import FeedingForm
 
 # Create your views here.
 finches = [
@@ -62,4 +63,29 @@ def finches_index(request):
 
 def finch_detail(request, finch_id):
     finch = Finch.objects.get(id=finch_id)
-    return render(request, 'finches/detail.html', {'finch': finch})
+
+    feeding_form = FeedingForm()
+    print(finch.__dict__)
+
+    return render(request, 'finches/detail.html', {
+        'finch': finch,
+        'feeding_form': feeding_form
+    })
+
+# 'finches/<int:finch_id>/add_feeding/'
+
+
+def add_feeding(request, finch_id):
+    # process the form request form the client
+    form = FeedingForm(request.POST)
+    # request.POST is like req.body, its the contents of the form
+    # validate the form
+    if form.is_valid():
+        # create an in memory instance (on django) of our data
+        # to be added to psql, commit=False, don't save to db yet
+        new_feeding = form.save(commit=False)
+        # add the finch id to the new_feeding
+        new_feeding.finch_id = finch_id
+        new_feeding.save()  # adding a feeding row to the feeding table in psql
+    return redirect('finch-detail', finch_id=finch_id)
+    # finch_id is the name of the param, and the id from the finch url path
