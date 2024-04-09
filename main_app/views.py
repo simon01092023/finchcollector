@@ -1,28 +1,29 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Finch
+from django.views.generic import ListView, DetailView
+from .models import Finch, Toy
 from .forms import FeedingForm
 
-# Create your views here.
-finches = [
-    {'species': 'Zebra Finch', 'color': 'Gray', 'size': 'Small'},
-    {'species': 'Gouldian Finch', 'color': 'Multicolored', 'size': 'Small'},
-    {'species': 'Society Finch', 'color': 'Brown', 'size': 'Small'},
-    {'species': 'Spice Finch', 'color': 'Brown', 'size': 'Small'},
-    {'species': 'Star Finch', 'color': 'Red', 'size': 'Small'}
-]
+# # Create your views here.
+# finches = [
+#     {'species': 'Zebra Finch', 'color': 'Gray', 'size': 'Small'},
+#     {'species': 'Gouldian Finch', 'color': 'Multicolored', 'size': 'Small'},
+#     {'species': 'Society Finch', 'color': 'Brown', 'size': 'Small'},
+#     {'species': 'Spice Finch', 'color': 'Brown', 'size': 'Small'},
+#     {'species': 'Star Finch', 'color': 'Red', 'size': 'Small'}
+# ]
 
-# Define a function to simulate a view that returns finch data
-
-
-def get_finch_data():
-    # In a real application, you would retrieve data from a database
-    # Here, we are just returning the simulated data
-    return finches
+# # Define a function to simulate a view that returns finch data
 
 
-# Simulate calling the view function and print the result
-print(get_finch_data())
+# def get_finch_data():
+#     # In a real application, you would retrieve data from a database
+#     # Here, we are just returning the simulated data
+#     return finches
+
+
+# # Simulate calling the view function and print the result
+# print(get_finch_data())
 
 
 def home(request):
@@ -32,6 +33,21 @@ def home(request):
 
 def about(request):
     return render(request, 'about.html')
+
+
+def disassoc_toy(request, finch_id, toy_id):
+    finch = Finch.objects.get(id=finch_id)
+    finch.toys.remove(toy_id)
+    return redirect('finch-detail', finch_id=finch_id)
+
+# finches/<int:finch_id>/assoc_toy/<int:toy_id>/
+
+
+def assoc_toy(request, finch_id, toy_id):
+    print(finch_id, toy_id)
+    finch = Finch.objects.get(id=finch_id)
+    finch.toys.add(toy_id)  # adding a row to 2 foriegn keys table in sql
+    return redirect('finch-detail', finch_id=finch_id)
 
 
 class FinchCreate(CreateView):
@@ -63,13 +79,18 @@ def finches_index(request):
 
 def finch_detail(request, finch_id):
     finch = Finch.objects.get(id=finch_id)
-
+    id_list = finch.toys.all().values_list('id')
+    # query the toys table for a the toys
+    toys_finch_doesnt_have = Toy.objects.exclude(id__in=id_list)
+    # form object
     feeding_form = FeedingForm()
     print(finch.__dict__)
 
     return render(request, 'finches/detail.html', {
         'finch': finch,
-        'feeding_form': feeding_form
+        'feeding_form': feeding_form,
+        'toys': toys_finch_doesnt_have
+
     })
 
 # 'finches/<int:finch_id>/add_feeding/'
@@ -89,3 +110,26 @@ def add_feeding(request, finch_id):
         new_feeding.save()  # adding a feeding row to the feeding table in psql
     return redirect('finch-detail', finch_id=finch_id)
     # finch_id is the name of the param, and the id from the finch url path
+
+
+class ToyList(ListView):
+    model = Toy
+
+
+class ToyDetail(DetailView):
+    model = Toy
+
+
+class ToyCreate(CreateView):
+    model = Toy
+    fields = '__all__'
+
+
+class ToyUpdate(UpdateView):
+    model = Toy
+    fields = ['name', 'color']
+
+
+class ToyDelete(DeleteView):
+    model = Toy
+    success_url = '/toys/'

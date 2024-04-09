@@ -6,15 +6,6 @@
   <h1 style="margin: 0;">Finch List <img src="{% static '/img/row.jpg' %}" style="max-width: 300px; margin: 0;"></h1> 
 </div>
 
-<!-- <div>
-<div id="finchlist-1" style="max-height:20%;">
-<h1>Finch List</h1>
-</div>
-<div id="finchlist-2" style="max-height:20%;">
-<img src="{% static '/img/row.jpg' %}">
-</div>
-</div> -->
-
 {% for finch in finches %}
   <div class="card">
     <a href="{% url 'finch-detail' finch.id %}">
